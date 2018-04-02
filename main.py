@@ -1,5 +1,4 @@
 import pandas as pd
-import jieba
 import csv
 import re
 import time
@@ -19,8 +18,7 @@ if __name__ == '__main__':
                         default='dataset/output.txt',
                         help='output file name')
     args = parser.parse_args()
-    
-    # Please implement your algorithm below
+
     # extract eng word to speed up n-gram
     def extractEngWord(stnc):
         reg = r"\^[\u4e00-\ufaff]+|[a-zA-z]+"
@@ -36,7 +34,7 @@ if __name__ == '__main__':
     # load source data, build search engine
     srcData = pd.read_csv(args.source, names = ["index", "sentence"])
     srcDataList = srcData["sentence"].values
-    ignoreSymbols = "：！《》…？「」】【／〈〉（）()〞〝"
+    ignoreSymbols = "：！…？"
     ngramTables = []
     engTable = {}
 
@@ -54,6 +52,9 @@ if __name__ == '__main__':
                 for eng in engWords:
                     stnc = stnc.replace(eng, '')
                 addWordIndex(engTable, engWords, index + 1)
+            
+            # eliminate brackets after handling english words 
+            stnc = re.sub(r"《》「」【】〈〉〞〝（）()", '', stnc)
 
             ngram = [stnc[i:i+n] for i in range(len(stnc) - (n-1))]
             addWordIndex(gramTable, ngram, index + 1)
@@ -169,4 +170,3 @@ if __name__ == '__main__':
             else:
                 print("Query Error")
     
-    # query 6, 10 still not correct!
