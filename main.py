@@ -45,19 +45,19 @@ if __name__ == '__main__':
         for index, line in enumerate(srcDataList):
             # eliminate useless symbol character
             stnc = ''.join(c for c in line if c not in ignoreSymbols)
-            
+            index = index + 1            
             # build inverted index by ngram and engwords
             engWords = extractEngWord(stnc)
             if len(engWords) != 0:
                 for eng in engWords:
                     stnc = stnc.replace(eng, '')
-                addWordIndex(engTable, engWords, index + 1)
+                addWordIndex(engTable, engWords, index)
             
             # eliminate brackets after handling english words 
-            stnc = re.sub(r"《》「」【】〈〉〞〝（）()", '', stnc)
+            stnc = re.sub(r"[《》「」【】〈〉〞〝（）()]", '', stnc)
 
             ngram = [stnc[i:i+n] for i in range(len(stnc) - (n-1))]
-            addWordIndex(gramTable, ngram, index + 1)
+            addWordIndex(gramTable, ngram, index)
 
         ngramTables.append(gramTable)
     # save inverted index of 2-gram, 3-gram, English seperatly
