@@ -46,27 +46,30 @@ if __name__ == '__main__':
             # eliminate useless symbol character
             stnc = ''.join(c for c in line if c not in ignoreSymbols)
             index = index + 1            
-            # build inverted index by ngram and engwords
-            engWords = extractEngWord(stnc)
-            if len(engWords) != 0:
-                for eng in engWords:
-                    stnc = stnc.replace(eng, '')
-                addWordIndex(engTable, engWords, index)
-            
-            # eliminate brackets after handling english words 
-            stnc = re.sub(r"[《》「」【】〈〉〞〝（）()]", '', stnc)
 
+            # build inverted index by ngram and engwords
+            # extract engwords first and avoid repeatition in 3-gram loop
+            if n == 2: 
+                engWords = extractEngWord(stnc)
+                if len(engWords) != 0:
+                    for eng in engWords:
+                        stnc = stnc.replace(eng, '')
+                    addWordIndex(engTable, engWords, index)
+            
+                # eliminate brackets after handling english words 
+                stnc = re.sub(r"[《》「」【】〈〉〞〝（）()]", '', stnc)
+                srcDataList[index - 1] = stnc
+    
             ngram = [stnc[i:i+n] for i in range(len(stnc) - (n-1))]
             addWordIndex(gramTable, ngram, index)
 
         ngramTables.append(gramTable)
+
     # save inverted index of 2-gram, 3-gram, English seperatly
     ngramTables.append(engTable)
     print("--- ngram cost {} sec ---".format(time.time() - startTime))
 
-
     # compute query result
-
     lines = [line.rstrip('\n') for line in open(args.query)]
   
     def discardSpace(tokens):
